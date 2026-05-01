@@ -11,9 +11,9 @@ export const protect = (req, res, next) => {
       req.user = decoded;
       next();
     } catch (error) {
-      return res.status(401).json({ message: "Invalid token" });
+      return res.status(401).json({ status: "fail", message: "Invalid token" });
     }
   } else {
-    return res.status(401).json({ message: "No token" });
+    return res.status(401).json({ status: "fail", message: "No token" });
   }
 };
