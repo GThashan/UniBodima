@@ -13,7 +13,7 @@ export const register = async (req, res) => {
 
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
-      return res.status(400).json({ status: "fail", message: "User already exists" });
+      return res.status(400).json({ status: "fail", message: "Phone number already registered" });
     }
 
     if (!["student", "owner"].includes(role)) {

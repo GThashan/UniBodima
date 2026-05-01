@@ -37,7 +37,7 @@ export const createBoarding = async (req, res) => {
     res.status(500).json({ status: "fail", message: error.message });
   }
 };
-
+// GET OWNER'S BOARDINGS
 export const getOwnerBoardings = async (req, res) => {
   try {
     const boardings = await Boarding.find({ ownerId: req.user.id });
@@ -47,18 +47,18 @@ export const getOwnerBoardings = async (req, res) => {
     res.status(500).json({ status: "fail", message: error.message });
   }
 };
-
+// UPDATE BOARDING (OWNER)
 export const updateBoarding = async (req, res) => {
   try {
     const boarding = await Boarding.findById(req.params.id);
 
     if (!boarding) {
-      return res.status(404).json({ message: "Boarding not found" });
+      return res.status(404).json({status: "fail", message: "Boarding not found" });
     }
 
 
     if (boarding.ownerId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not your boarding post" });
+      return res.status(403).json({status:'fail', message: "Not your boarding post" });
     }
 
     const updated = await Boarding.findByIdAndUpdate(
@@ -67,9 +67,30 @@ export const updateBoarding = async (req, res) => {
       { new: true }
     );
 
-    res.json(updated);
+    res.json({status: "success",message: "Boarding updated successfully", boarding: updated });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ status: "fail", message: error.message });
+  }
+};
+// DELETE BOARDING (OWNER)
+export const deleteBoarding = async (req, res) => {
+  try {
+    const boarding = await Boarding.findById(req.params.id);
+
+    if (!boarding) {
+      return res.status(404).json({ status: "fail", message: "Boarding not found" });
+    }
+
+    if (boarding.ownerId.toString() !== req.user.id) {
+      return res.status(403).json({ status: "fail", message: "Not your boarding post" });
+    }
+
+    await boarding.deleteOne();
+
+    res.json({ status: "success", message: "Boarding deleted successfully" });
+
+  } catch (error) {
+    res.status(500).json({ status: "fail", message: error.message });
   }
 };
