@@ -37,3 +37,13 @@ export const createBoarding = async (req, res) => {
     res.status(500).json({ status: "fail", message: error.message });
   }
 };
+
+export const getOwnerBoardings = async (req, res) => {
+  try {
+    const boardings = await Boarding.find({ ownerId: req.user.id });
+    res.json({ status: "success", boardings });
+
+  } catch (error) {
+    res.status(500).json({ status: "fail", message: error.message });
+  }
+};
