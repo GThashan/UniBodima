@@ -7,6 +7,7 @@ import { RegisterModal } from './components/RegisterModal';
 import { HomePage } from './pages/HomePage';
 import { PropertiesPage } from './pages/PropertiesPage';
 import { RequestsPage } from './pages/RequestsPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/requests" element={<RequestsPage />} />
         <Route path="/properties" element={<PropertiesPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
 
       <Footer />

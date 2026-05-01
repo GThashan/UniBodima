@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiLogOut, FiHome, FiClipboard, FiGrid } from 'react-icons/fi';
-import { Link, useLocation } from 'react-router-dom';
+import { FiUser, FiLogOut, FiHome, FiClipboard, FiGrid, FiSettings } from 'react-icons/fi';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 interface NavbarProps {
@@ -10,22 +10,28 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   const [user, setUser] = useState<any>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
     }
-  }, []);
+  }, [location]); // Re-check user status on location changes
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    window.location.href = '/';
+    navigate('/');
+    window.location.reload();
   };
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <nav className="custom-navbar sticky-top">
@@ -34,10 +40,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
         <Link to="/" className="logo-container text-decoration-none">
           <img 
             src={logo} 
-            alt="Proty Real Estate" 
+            alt="UniBodima Logo" 
             style={{ height: '40px', objectFit: 'contain' }} 
             onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x40?text=LOGO';
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x40?text=UniBodima';
             }}
           />
         </Link>
@@ -66,31 +72,42 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
               <button 
                 className="btn d-flex align-items-center gap-2" 
                 style={{ border: '1px solid var(--primary-color)', color: 'var(--primary-color)', borderRadius: '25px', padding: '8px 20px', fontWeight: 600 }}
+                id="userDropdown"
                 data-bs-toggle="dropdown" 
                 aria-expanded="false"
               >
                 <FiUser /> <span className="d-none d-md-block">{user.name}</span>
               </button>
-              <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+              <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userDropdown">
+                <li>
+                  <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/profile')}>
+                    <FiSettings /> Profile Settings
+                  </button>
+                </li>
+                <li><hr className="dropdown-divider" /></li>
                 <li className="d-lg-none">
-                  <Link className="dropdown-item d-flex align-items-center gap-2" to="/">
+                  <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/')}>
                     <FiHome /> Home
-                  </Link>
+                  </button>
                 </li>
                 <li className="d-lg-none">
-                  <Link className="dropdown-item d-flex align-items-center gap-2" to="/requests">
+                  <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/requests')}>
                     <FiClipboard /> Request
-                  </Link>
+                  </button>
                 </li>
                 {user.role === 'owner' && (
                   <li className="d-lg-none">
-                    <Link className="dropdown-item d-flex align-items-center gap-2" to="/properties">
+                    <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/properties')}>
                       <FiGrid /> Properties
-                    </Link>
+                    </button>
                   </li>
                 )}
                 <li className="d-lg-none"><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item text-danger d-flex align-items-center gap-2" onClick={handleLogout}><FiLogOut /> Logout</button></li>
+                <li>
+                  <button className="dropdown-item text-danger d-flex align-items-center gap-2" onClick={handleLogout}>
+                    <FiLogOut /> Logout
+                  </button>
+                </li>
               </ul>
             </div>
           ) : (

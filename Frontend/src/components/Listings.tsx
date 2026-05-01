@@ -56,7 +56,7 @@ export const Listings: React.FC = () => {
       <div className="container">
         <h2 className="section-title">Today's Luxury Listings</h2>
         <p className="section-subtitle">
-          Thousands of luxury home enthusiasts just like you visit our website.
+          Discover hand-picked lodgings specifically for Vavuniya University students.
         </p>
 
         {loading ? (
