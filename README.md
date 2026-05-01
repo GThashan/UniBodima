@@ -190,5 +190,21 @@ UniBodima provides a digital marketplace tailored to the local housing landscape
    *The application will be available at `http://localhost:5173`*
 
 ---
-![alt text](image.png)
+
+## 📸 Screenshots
+
+| Landing Page | Search & Filters | Property Details |
+| :---: | :---: | :---: |
+| ![Home](image.png) | ![Filters](image-1.png) | ![Details](image-2.png) |
+
+| Owner Dashboard | Requests Management | Profile Settings |
+| :---: | :---: | :---: |
+| ![Owner](image-3.png) | ![Requests](image-5.png) | ![Profile](image-6.png) |
+
+| Mobile View |
+| :---: |
+| ![Mobile](image-7.png) |
+
+---
+
 Developed for the students of **University of Vavuniya**. 🎓
