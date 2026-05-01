@@ -201,13 +201,10 @@ UniBodima provides a digital marketplace tailored to the local housing landscape
 | :---: | :---: | :---: |
 | ![Owner](image-3.png) | ![Properties](image-4.png) | ![Requests](image-5.png) |
 
-| Profile Settings | Mobile View | Search Results |
+| Mobile View | Mobile View | Mobile View |
 | :---: | :---: | :---: |
-| ![Profile](image-6.png) | ![Mobile](image-7.png) | ![Search](image-8.png) |
+| ![Profile](image-8.png) | ![Mobile](image-9.png) | ![Search](image-10.png) |
 
-| Login Authentication | User Registration |
-| :---: | :---: |
-| ![Auth](image-9.png) | ![Register](image-10.png) |
 
 ---
 
