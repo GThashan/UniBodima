@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiLogOut } from 'react-icons/fi';
+import { FiUser, FiLogOut, FiHome, FiClipboard, FiGrid } from 'react-icons/fi';
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 interface NavbarProps {
@@ -8,6 +9,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   const [user, setUser] = useState<any>(null);
+  const location = useLocation();
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -20,14 +22,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    window.location.reload();
+    window.location.href = '/';
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <nav className="custom-navbar">
+    <nav className="custom-navbar sticky-top">
       <div className="container d-flex justify-content-between align-items-center">
         {/* Left Side: Logo */}
-        <div className="logo-container">
+        <Link to="/" className="logo-container text-decoration-none">
           <img 
             src={logo} 
             alt="Proty Real Estate" 
@@ -36,10 +40,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
               (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x40?text=LOGO';
             }}
           />
+        </Link>
+
+        {/* Center: Navigation Links */}
+        <div className="d-none d-lg-flex align-items-center gap-4">
+          <Link to="/" className={`nav-link-custom ${isActive('/') ? 'active' : ''}`}>
+            Home
+          </Link>
+          {user && (
+            <Link to="/requests" className={`nav-link-custom ${isActive('/requests') ? 'active' : ''}`}>
+              Request
+            </Link>
+          )}
+          {user && user.role === 'owner' && (
+            <Link to="/properties" className={`nav-link-custom ${isActive('/properties') ? 'active' : ''}`}>
+              Properties
+            </Link>
+          )}
         </div>
 
-        {/* Right Side: Login Icon */}
-        <div className="d-flex align-items-center">
+        {/* Right Side: User Actions */}
+        <div className="d-flex align-items-center gap-3">
           {user ? (
             <div className="dropdown">
               <button 
@@ -51,18 +72,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
                 <FiUser /> <span className="d-none d-md-block">{user.name}</span>
               </button>
               <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                <li><a className="dropdown-item" href="#">Dashboard ({user.role})</a></li>
-                <li><hr className="dropdown-divider" /></li>
+                <li className="d-lg-none">
+                  <Link className="dropdown-item d-flex align-items-center gap-2" to="/">
+                    <FiHome /> Home
+                  </Link>
+                </li>
+                <li className="d-lg-none">
+                  <Link className="dropdown-item d-flex align-items-center gap-2" to="/requests">
+                    <FiClipboard /> Request
+                  </Link>
+                </li>
+                {user.role === 'owner' && (
+                  <li className="d-lg-none">
+                    <Link className="dropdown-item d-flex align-items-center gap-2" to="/properties">
+                      <FiGrid /> Properties
+                    </Link>
+                  </li>
+                )}
+                <li className="d-lg-none"><hr className="dropdown-divider" /></li>
                 <li><button className="dropdown-item text-danger d-flex align-items-center gap-2" onClick={handleLogout}><FiLogOut /> Logout</button></li>
               </ul>
             </div>
           ) : (
-            <>
+            <div className="d-flex align-items-center">
               <button className="login-btn" aria-label="Login" onClick={onLoginClick}>
                 <FiUser />
               </button>
               <span className="login-text d-none d-md-block" onClick={onLoginClick}>Login</span>
-            </>
+            </div>
           )}
         </div>
       </div>

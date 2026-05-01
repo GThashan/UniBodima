@@ -94,3 +94,12 @@ export const deleteBoarding = async (req, res) => {
     res.status(500).json({ status: "fail", message: error.message });
   }
 };
+
+export const getPublicBoardings = async (req, res) => {
+  try {
+    const boardings = await Boarding.find();
+    res.json({ status: "success", boardings });
+  } catch (error) {
+    res.status(500).json({ status: "fail", message: error.message });
+  }
+};

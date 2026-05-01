@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { Categories } from './components/Categories';
-import { Listings } from './components/Listings';
 import { Footer } from './components/Footer';
 import { LoginModal } from './components/LoginModal';
 import { RegisterModal } from './components/RegisterModal';
+import { HomePage } from './pages/HomePage';
+import { PropertiesPage } from './pages/PropertiesPage';
+import { RequestsPage } from './pages/RequestsPage';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -14,9 +15,13 @@ function App() {
   return (
     <div className="app-container position-relative">
       <Navbar onLoginClick={() => setShowLogin(true)} />
-      <Hero />
-      <Categories />
-      <Listings />
+      
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/requests" element={<RequestsPage />} />
+        <Route path="/properties" element={<PropertiesPage />} />
+      </Routes>
+
       <Footer />
 
       {/* Auth Modals */}
