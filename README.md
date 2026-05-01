@@ -190,5 +190,5 @@ UniBodima provides a digital marketplace tailored to the local housing landscape
    *The application will be available at `http://localhost:5173`*
 
 ---
-
+![alt text](image.png)
 Developed for the students of **University of Vavuniya**. 🎓

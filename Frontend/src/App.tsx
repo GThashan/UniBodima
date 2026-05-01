@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -9,14 +9,39 @@ import { PropertiesPage } from './pages/PropertiesPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PropertyDetailsPage } from './pages/PropertyDetailsPage';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  const handleLoginSuccess = () => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+    setShowLogin(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    window.location.href = '/';
+  };
 
   return (
     <div className="app-container position-relative">
-      <Navbar onLoginClick={() => setShowLogin(true)} />
+      <Toaster position="top-right" containerStyle={{ zIndex: 100000 }} />
+      <Navbar onLoginClick={() => setShowLogin(true)} user={user} onLogout={handleLogout} />
       
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -33,7 +58,7 @@ function App() {
         <LoginModal
           onClose={() => setShowLogin(false)}
           onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true); }}
-          onLoginSuccess={() => window.location.reload()}
+          onLoginSuccess={handleLoginSuccess}
         />
       )}
 

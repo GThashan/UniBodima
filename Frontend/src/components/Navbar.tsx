@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { FiUser, FiLogOut, FiHome, FiClipboard, FiGrid, FiSettings, FiBell } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
@@ -6,27 +6,13 @@ import logo from '../assets/logo.png';
 
 interface NavbarProps {
   onLoginClick: () => void;
+  user: any;
+  onLogout: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
-  const [user, setUser] = useState<any>(null);
+export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, user, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, [location]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    navigate('/');
-    window.location.reload();
-  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -34,15 +20,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
     <nav className="custom-navbar sticky-top">
       <div className="container d-flex justify-content-between align-items-center">
         {/* Left Side: Logo */}
-        <Link to="/" className="logo-container text-decoration-none">
-          <img 
-            src={logo} 
-            alt="UniBodima Logo" 
-            style={{ height: '40px', objectFit: 'contain' }} 
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x40?text=UniBodima';
-            }}
-          />
+        <Link to="/" className="navbar-brand d-flex align-items-center gap-2">
+          <img src={logo} alt="UniBodima" style={{ height: '60px' }} />
+
         </Link>
 
         {/* Center: Navigation Links */}
@@ -77,15 +57,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
 
           {user ? (
             <Dropdown align="end">
-              <Dropdown.Toggle 
-                variant="none" 
-                id="dropdown-user"
-                className="d-flex align-items-center gap-2"
-                style={{ 
-                  border: '1px solid var(--primary-color)', 
-                  color: 'var(--primary-color)', 
-                  borderRadius: '25px', 
-                  padding: '8px 20px', 
+              <Dropdown.Toggle
+                variant="link"
+                id="user-dropdown"
+                className="d-flex align-items-center gap-2 text-decoration-none dropdown-custom-toggle"
+                style={{
+                  color: 'var(--text-dark)',
+                  fontSize: '1.1rem',
                   fontWeight: 600,
                   boxShadow: 'none'
                 }}
@@ -112,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
                   )}
                   <Dropdown.Divider />
                 </div>
-                <Dropdown.Item onClick={handleLogout} className="text-danger d-flex align-items-center gap-2">
+                <Dropdown.Item onClick={onLogout} className="text-danger d-flex align-items-center gap-2">
                   <FiLogOut /> Logout
                 </Dropdown.Item>
               </Dropdown.Menu>
