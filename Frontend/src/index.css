@@ -640,6 +640,48 @@ body {
   color: white;
 }
 
+/* Modal Custom Styles */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: zoomIn 0.3s ease-out;
+}
+
+.custom-modal {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.custom-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.custom-modal-close:hover {
+  color: var(--text-dark);
+}
+
 /* Animations */
 @keyframes fadeInDown {
   from {
