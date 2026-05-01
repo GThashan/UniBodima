@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiUser, FiLogOut, FiHome, FiClipboard, FiGrid, FiSettings } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Dropdown } from 'react-bootstrap';
 import logo from '../assets/logo.png';
 
 interface NavbarProps {
@@ -17,7 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
     if (userData) {
       setUser(JSON.parse(userData));
     }
-  }, [location]); // Re-check user status on location changes
+  }, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -28,10 +29,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   };
 
   const isActive = (path: string) => location.pathname === path;
-
-  const handleNavigate = (path: string) => {
-    navigate(path);
-  };
 
   return (
     <nav className="custom-navbar sticky-top">
@@ -50,9 +47,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
 
         {/* Center: Navigation Links */}
         <div className="d-none d-lg-flex align-items-center gap-4">
-          <Link to="/" className={`nav-link-custom ${isActive('/') ? 'active' : ''}`}>
-            Home
-          </Link>
+          {user && (
+            <Link to="/" className={`nav-link-custom ${isActive('/') ? 'active' : ''}`}>
+              Home
+            </Link>
+          )}
           {user && (
             <Link to="/requests" className={`nav-link-custom ${isActive('/requests') ? 'active' : ''}`}>
               Request
@@ -68,48 +67,47 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
         {/* Right Side: User Actions */}
         <div className="d-flex align-items-center gap-3">
           {user ? (
-            <div className="dropdown">
-              <button 
-                className="btn d-flex align-items-center gap-2" 
-                style={{ border: '1px solid var(--primary-color)', color: 'var(--primary-color)', borderRadius: '25px', padding: '8px 20px', fontWeight: 600 }}
-                id="userDropdown"
-                data-bs-toggle="dropdown" 
-                aria-expanded="false"
+            <Dropdown align="end">
+              <Dropdown.Toggle 
+                variant="none" 
+                id="dropdown-user"
+                className="d-flex align-items-center gap-2"
+                style={{ 
+                  border: '1px solid var(--primary-color)', 
+                  color: 'var(--primary-color)', 
+                  borderRadius: '25px', 
+                  padding: '8px 20px', 
+                  fontWeight: 600,
+                  boxShadow: 'none'
+                }}
               >
                 <FiUser /> <span className="d-none d-md-block">{user.name}</span>
-              </button>
-              <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userDropdown">
-                <li>
-                  <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/profile')}>
-                    <FiSettings /> Profile Settings
-                  </button>
-                </li>
-                <li><hr className="dropdown-divider" /></li>
-                <li className="d-lg-none">
-                  <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/')}>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu className="shadow border-0 mt-2">
+                <Dropdown.Item onClick={() => navigate('/profile')} className="d-flex align-items-center gap-2">
+                  <FiSettings /> Profile Settings
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <div className="d-lg-none">
+                  <Dropdown.Item onClick={() => navigate('/')} className="d-flex align-items-center gap-2">
                     <FiHome /> Home
-                  </button>
-                </li>
-                <li className="d-lg-none">
-                  <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/requests')}>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => navigate('/requests')} className="d-flex align-items-center gap-2">
                     <FiClipboard /> Request
-                  </button>
-                </li>
-                {user.role === 'owner' && (
-                  <li className="d-lg-none">
-                    <button className="dropdown-item d-flex align-items-center gap-2" onClick={() => handleNavigate('/properties')}>
+                  </Dropdown.Item>
+                  {user.role === 'owner' && (
+                    <Dropdown.Item onClick={() => navigate('/properties')} className="d-flex align-items-center gap-2">
                       <FiGrid /> Properties
-                    </button>
-                  </li>
-                )}
-                <li className="d-lg-none"><hr className="dropdown-divider" /></li>
-                <li>
-                  <button className="dropdown-item text-danger d-flex align-items-center gap-2" onClick={handleLogout}>
-                    <FiLogOut /> Logout
-                  </button>
-                </li>
-              </ul>
-            </div>
+                    </Dropdown.Item>
+                  )}
+                  <Dropdown.Divider />
+                </div>
+                <Dropdown.Item onClick={handleLogout} className="text-danger d-flex align-items-center gap-2">
+                  <FiLogOut /> Logout
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           ) : (
             <div className="d-flex align-items-center">
               <button className="login-btn" aria-label="Login" onClick={onLoginClick}>
