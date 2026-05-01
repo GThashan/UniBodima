@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api';
+import toast from 'react-hot-toast';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -10,12 +11,10 @@ interface LoginModalProps {
 export const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSwitchToRegister, onLoginSuccess }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
@@ -23,13 +22,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSwitchToRegis
       if (response.data.status === 'success') {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        toast.success(`Welcome back, ${response.data.user.name}!`);
         onLoginSuccess();
         onClose();
-      } else {
-        setError(response.data.message || 'Login failed');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+      toast.error(err.response?.data?.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }
@@ -40,8 +38,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSwitchToRegis
       <div className="custom-modal">
         <button className="custom-modal-close" onClick={onClose}>&times;</button>
         <h2 className="text-center mb-4" style={{ fontWeight: 600 }}>Welcome Back</h2>
-        
-        {error && <div className="alert alert-danger p-2 fs-6">{error}</div>}
         
         <form onSubmit={handleLogin}>
           <div className="mb-3">

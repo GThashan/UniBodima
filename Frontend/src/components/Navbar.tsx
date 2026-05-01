@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiLogOut, FiHome, FiClipboard, FiGrid, FiSettings } from 'react-icons/fi';
+import { FiUser, FiLogOut, FiHome, FiClipboard, FiGrid, FiSettings, FiBell } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import logo from '../assets/logo.png';
@@ -65,7 +65,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
         </div>
 
         {/* Right Side: User Actions */}
-        <div className="d-flex align-items-center gap-3">
+        <div className="d-flex align-items-center gap-2 gap-md-3">
+          {user && (
+            <button className="nav-icon-btn d-flex align-items-center justify-content-center position-relative me-1" aria-label="Notifications">
+              <FiBell style={{ fontSize: '1.2rem' }} />
+              <span className="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger">
+                0
+              </span>
+            </button>
+          )}
+
           {user ? (
             <Dropdown align="end">
               <Dropdown.Toggle 

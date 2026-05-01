@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FiMapPin, FiHeart, FiSearch, FiCalendar } from 'react-icons/fi';
+import { FiMapPin, FiCalendar } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import api from '../api';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 export const Listings: React.FC = () => {
   const [listings, setListings] = useState<any[]>([]);
@@ -14,7 +17,6 @@ export const Listings: React.FC = () => {
     try {
       const response = await api.get('/boardings/public');
       if (response.data) {
-        // Handle different response structures gracefully
         const data = Array.isArray(response.data) ? response.data : (response.data.boardings || []);
         setListings(data);
       }
@@ -27,8 +29,6 @@ export const Listings: React.FC = () => {
 
   useEffect(() => {
     fetchListings();
-    
-    // Prefill user data if logged in
     const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
@@ -44,17 +44,26 @@ export const Listings: React.FC = () => {
         studentName: requestData.name,
         studentPhone: requestData.phone
       });
-      alert('Request sent successfully!');
+      
+      Swal.fire({
+        title: 'Success!',
+        text: 'Your visit request has been sent to the owner.',
+        icon: 'success',
+        confirmButtonColor: '#f08336'
+      });
+      
       setShowRequestModal(false);
     } catch (error) {
-      alert('Error sending request. Please login first.');
+      toast.error('Log in as a student to send requests');
     }
   };
+
+  if (!loading && listings.length === 0) return null;
 
   return (
     <section className="listings-section">
       <div className="container">
-        <h2 className="section-title">Today's Luxury Listings</h2>
+        <h2 className="section-title">Today's Listings</h2>
         <p className="section-subtitle">
           Discover hand-picked lodgings specifically for Vavuniya University students.
         </p>
@@ -67,21 +76,21 @@ export const Listings: React.FC = () => {
           <div className="row g-4">
             {listings.map((listing) => (
               <div className="col-12 col-md-6 col-lg-4" key={listing._id}>
-                <div className="listing-card">
-                  <div className="listing-img-wrapper">
-                    <img src={listing.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} alt={listing.title} className="listing-img" />
-                    <div className="listing-tags">
-                      <span className="tag-featured">Featured</span>
-                      <span className="tag-status">For Rent</span>
+                <div className="listing-card shadow-sm">
+                  <Link to={`/properties/${listing._id}`} className="text-decoration-none">
+                    <div className="listing-img-wrapper">
+                      <img src={listing.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} alt={listing.title} className="listing-img" />
+                      <div className="listing-tags">
+                        <span className="tag-featured">Featured</span>
+                        <span className="tag-status">For Rent</span>
+                      </div>
                     </div>
-                    <div className="listing-actions">
-                      <button className="action-btn-circle"><FiHeart /></button>
-                      <button className="action-btn-circle"><FiSearch /></button>
-                    </div>
-                  </div>
+                  </Link>
                   
                   <div className="listing-body">
-                    <h3 className="listing-title">{listing.title}</h3>
+                    <Link to={`/properties/${listing._id}`} className="text-decoration-none color-inherit">
+                      <h3 className="listing-title">{listing.title}</h3>
+                    </Link>
                     <div className="listing-location">
                       <FiMapPin /> {listing.location}
                     </div>
@@ -99,16 +108,26 @@ export const Listings: React.FC = () => {
                     </div>
                     
                     <div className="listing-footer">
-                      <div className="listing-price">${listing.price}</div>
-                      <button 
-                        className="btn-details d-flex align-items-center gap-2"
-                        onClick={() => {
-                          setSelectedBoarding(listing);
-                          setShowRequestModal(true);
-                        }}
-                      >
-                        <FiCalendar /> Request
-                      </button>
+                      <div className="listing-price text-primary">LKR {listing.price.toLocaleString()}</div>
+                      <div className="d-flex gap-2">
+                        <Link to={`/properties/${listing._id}`} className="btn btn-outline-dark rounded-pill px-3 py-1 small">
+                          Details
+                        </Link>
+                        <button 
+                          className="btn-details d-flex align-items-center gap-2"
+                          onClick={() => {
+                            const token = localStorage.getItem('token');
+                            if (!token) {
+                               toast.error('Please login to send a request');
+                               return;
+                            }
+                            setSelectedBoarding(listing);
+                            setShowRequestModal(true);
+                          }}
+                        >
+                          <FiCalendar /> Request
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -120,17 +139,17 @@ export const Listings: React.FC = () => {
 
       {showRequestModal && (
         <div className="custom-modal-overlay">
-          <div className="custom-modal">
+          <div className="custom-modal animate__animated animate__zoomIn">
             <button className="custom-modal-close" onClick={() => setShowRequestModal(false)}>&times;</button>
-            <h3 className="mb-4">Request Visit</h3>
-            <p className="text-muted mb-4 small">Interested in <strong>{selectedBoarding?.title}</strong>? Send a request to the owner.</p>
+            <h3 className="mb-4 fw-bold">Request Visit</h3>
+            <p className="text-muted mb-4 small">Interested in <strong>{selectedBoarding?.title}</strong>? Confirm your contact details for the owner.</p>
             
             <form onSubmit={handleSendRequest}>
               <div className="mb-3">
                 <label className="form-label fw-bold">Your Name</label>
                 <input 
                   type="text" 
-                  className="form-control" 
+                  className="form-control border-2" 
                   value={requestData.name} 
                   onChange={(e) => setRequestData({...requestData, name: e.target.value})} 
                   required 
@@ -140,14 +159,14 @@ export const Listings: React.FC = () => {
                 <label className="form-label fw-bold">Phone Number</label>
                 <input 
                   type="text" 
-                  className="form-control" 
+                  className="form-control border-2" 
                   value={requestData.phone} 
                   onChange={(e) => setRequestData({...requestData, phone: e.target.value})} 
                   required 
                 />
               </div>
-              <button type="submit" className="search-btn w-100 justify-content-center">
-                Send Request
+              <button type="submit" className="search-btn w-100 justify-content-center py-3">
+                Confirm & Send Request
               </button>
             </form>
           </div>

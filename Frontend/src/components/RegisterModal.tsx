@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import api from '../api';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface RegisterModalProps {
   onClose: () => void;
@@ -11,19 +13,17 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSwitchT
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      toast.error('Password must be at least 6 characters');
       return;
     }
     if (!/^\d{10}$/.test(phone)) {
-      setError('Phone number must be exactly 10 digits');
+      toast.error('Phone number must be exactly 10 digits');
       return;
     }
 
@@ -32,12 +32,16 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSwitchT
     try {
       const response = await api.post('/auth/register', { name, phone, password, role });
       if (response.data.status === 'success') {
-        onSwitchToLogin(); // Automatically prompt login after successful register
-      } else {
-        setError(response.data.message || 'Registration failed');
+        Swal.fire({
+          title: 'Account Created!',
+          text: 'You have registered successfully. Please login to continue.',
+          icon: 'success',
+          confirmButtonColor: '#f08336'
+        });
+        onSwitchToLogin();
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred during registration');
+      toast.error(err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -48,8 +52,6 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSwitchT
       <div className="custom-modal">
         <button className="custom-modal-close" onClick={onClose}>&times;</button>
         <h2 className="text-center mb-4" style={{ fontWeight: 600 }}>Create Account</h2>
-        
-        {error && <div className="alert alert-danger p-2 fs-6">{error}</div>}
         
         <form onSubmit={handleRegister}>
           <div className="mb-3">

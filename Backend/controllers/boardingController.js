@@ -103,3 +103,16 @@ export const getPublicBoardings = async (req, res) => {
     res.status(500).json({ status: "fail", message: error.message });
   }
 };
+
+// GET SINGLE BOARDING BY ID
+export const getBoardingById = async (req, res) => {
+  try {
+    const boarding = await Boarding.findById(req.params.id).populate('ownerId', 'name phone');
+    if (!boarding) {
+      return res.status(404).json({ status: "fail", message: "Property not found" });
+    }
+    res.json({ status: "success", boarding });
+  } catch (error) {
+    res.status(500).json({ status: "fail", message: error.message });
+  }
+};

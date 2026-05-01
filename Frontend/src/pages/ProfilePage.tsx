@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { FiUser, FiPhone, FiLogOut, FiSave, FiInfo } from 'react-icons/fi';
 import api from '../api';
+import toast from 'react-hot-toast';
 
 export const ProfilePage: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const data = localStorage.getItem('user');
@@ -21,17 +20,15 @@ export const ProfilePage: React.FC = () => {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
-    setError('');
     try {
       const response = await api.put('/auth/profile', formData);
       if (response.data.status === 'success') {
         localStorage.setItem('user', JSON.stringify(response.data.user));
         setUser(response.data.user);
-        setMessage('Profile updated successfully!');
+        toast.success('Profile updated successfully!');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      toast.error(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setLoading(false);
     }
@@ -62,9 +59,6 @@ export const ProfilePage: React.FC = () => {
                 {user.role ? user.role.toUpperCase() : 'USER'}
               </span>
             </div>
-
-            {message && <div className="alert alert-success">{message}</div>}
-            {error && <div className="alert alert-danger">{error}</div>}
 
             <form onSubmit={handleUpdate}>
               <div className="mb-3">
@@ -105,7 +99,7 @@ export const ProfilePage: React.FC = () => {
                   <FiSave /> {loading ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button type="button" className="btn btn-outline-danger py-3 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2" onClick={handleLogout}>
-                  <FiLogOut /> Logout from Universal
+                  <FiLogOut /> Logout from UniBodima
                 </button>
               </div>
             </form>

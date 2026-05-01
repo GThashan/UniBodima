@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { PropertyModal } from '../components/PropertyModal';
-import { FiPlus, FiEdit2, FiTrash2, FiMapPin } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiMapPin, FiEye } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 export const PropertiesPage: React.FC = () => {
   const [properties, setProperties] = useState<any[]>([]);
@@ -28,12 +31,23 @@ export const PropertiesPage: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this property?')) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
       try {
         await api.delete(`/boardings/deleteBoarding/${id}`);
         fetchProperties();
+        toast.success('Property deleted successfully');
       } catch (error) {
-        alert('Error deleting property');
+        toast.error('Error deleting property');
       }
     }
   };
@@ -94,12 +108,15 @@ export const PropertiesPage: React.FC = () => {
                     <div className="feature-item"><span>{property.studentsCapacity}</span> Capacity</div>
                   </div>
                   <div className="listing-footer">
-                    <div className="listing-price">${property.price}</div>
+                    <div className="listing-price text-primary">LKR {property.price.toLocaleString()}</div>
                     <div className="d-flex gap-2">
-                      <button className="btn btn-outline-primary btn-sm rounded-circle p-2" onClick={() => openEditModal(property)}>
+                       <Link to={`/properties/${property._id}`} className="btn btn-outline-dark btn-sm rounded-circle p-2" title="View Details">
+                        <FiEye />
+                      </Link>
+                      <button className="btn btn-outline-primary btn-sm rounded-circle p-2" onClick={() => openEditModal(property)} title="Edit">
                         <FiEdit2 />
                       </button>
-                      <button className="btn btn-outline-danger btn-sm rounded-circle p-2" onClick={() => handleDelete(property._id)}>
+                      <button className="btn btn-outline-danger btn-sm rounded-circle p-2" onClick={() => handleDelete(property._id)} title="Delete">
                         <FiTrash2 />
                       </button>
                     </div>

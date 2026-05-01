@@ -8,6 +8,7 @@ import { HomePage } from './pages/HomePage';
 import { PropertiesPage } from './pages/PropertiesPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { PropertyDetailsPage } from './pages/PropertyDetailsPage';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -22,6 +23,7 @@ function App() {
         <Route path="/requests" element={<RequestsPage />} />
         <Route path="/properties" element={<PropertiesPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/properties/:id" element={<PropertyDetailsPage />} />
       </Routes>
 
       <Footer />
